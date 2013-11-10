@@ -194,11 +194,32 @@ class Touch
       pos += 1
     end
     
-    @history << nrow
+    @history << stringify(nrow)
     @row = nrow
     #puts "New row: #{nrow}"
   end
   
+  def stringify(row)
+    s = ""
+    row.each do |r|
+      s << bell_to_str(r)
+    end
+    s
+  end
+
+  def bell_to_str r
+    case r
+    when 10
+      '0'
+    when 11
+      'E'
+    when 12
+      'T'
+    else
+      r.to_s
+    end
+  end
+
 end
 
 comprja = "1.5.6.s9.12.14.15.16.17.18.19 (20) [a]\na"
