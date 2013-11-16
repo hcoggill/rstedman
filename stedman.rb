@@ -22,7 +22,7 @@ class MusicGen
   end
 
   def named_changes
-    music = { Backrounds: [[backrounds, HAND + BACK]], Queens: [[queens, HAND + BACK]], Kings: [[kings, HAND + BACK]], Tittums: [[tittums, HAND + BACK]], Nearmiss: nearmisses, DoubleWhittingtons: [[doublewhittingtons, HAND + BACK]] }
+    music = { Backrounds: [[backrounds, HAND + BACK]], Queens: [[queens, HAND + BACK]], Kings: [[kings, HAND + BACK]], Tittums: [[tittums, HAND + BACK]], Nearmiss: nearmisses, DoubleWhittingtons: [[doublewhittingtons, HAND + BACK]], Updown: [[updown, HAND + BACK]], HandstrokeHomes: [[homes, HAND]], BackstrokeHomes: [[homes, BACK]] }
   end
 
   def nearmisses
@@ -41,6 +41,14 @@ class MusicGen
     swapped[offset] = b
     swapped[offset + 1] = a
     return swapped
+  end
+
+  def homes
+    Array[nil] * (@n / 2.0).ceil + Array(((@n / 2.0).ceil + 1)..@n)    
+  end
+
+  def updown
+    Array(1..(@n / 2.0).ceil).reverse + Array(((@n / 2.0).ceil + 1)..@n)
   end
 
   def backrounds
@@ -64,13 +72,6 @@ class MusicGen
     Array((1..m).step(2)).reverse + Array((2..m).step(2)) + Array(((m + 1)..@n).step(2)).reverse + Array(((m + 2)..@n).step(2))
   end
 
-  def check_music
-    m = MusicGen.new(@n)
-    
-    @history.each do |row|
-      parse_music_row(music)
-    end
-  end
 end
 
 
@@ -323,7 +324,11 @@ class Touch
   end
 
   def comp_music_row(a, b)
-    a == b
+    return false unless a.length == b.length
+    a.length.times do |i|
+      return false if not a[i].nil? and not a[i] == b[i]
+    end
+    true
   end
 
 end
@@ -455,8 +460,8 @@ pp m.named_changes
 
 #touch.set_comp comprja
 #touch.set_comp compallton2
-#touch.set_comp compcoaker1
-touch.set_comp comppnm2
+touch.set_comp compcoaker1
+#touch.set_comp comppnm2
 
 puts "Starting to ring"
 touch.go
