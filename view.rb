@@ -18,12 +18,20 @@ class View < Qt::Widget
     ui_file.close
     table = find_child(Qt::TableView, 'tableView')
     @model.set_data(table)
+    table.horizontalHeader.setResizeMode(Qt::HeaderView::Fixed)
+    table.verticalHeader.setResizeMode(Qt::HeaderView::Fixed)
     #table.setModel(@model)
+    table.selectionModel.connect SIGNAL('selectionChanged(const QItemSelection &, const QItemSelection &)'), self, :on_selection
 
     @widget.show
     @app.exec
 
-  end 
+  end
+
+  def on_selection(x,y)
+    puts "x is: #{x}, y is #{y}"
+    @model.on_selection()
+  end
     
 end
 
