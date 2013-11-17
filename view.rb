@@ -18,6 +18,7 @@ class View < Qt::Widget
     ui_file.close
     table = find_child(Qt::TableView, 'tableView')
     @model.set_data(table)
+    #table.setModel(@model)
 
     @widget.show
     @app.exec

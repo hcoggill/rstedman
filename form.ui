@@ -20,9 +20,18 @@
       <x>20</x>
       <y>20</y>
       <width>351</width>
-      <height>441</height>
+      <height>531</height>
      </rect>
     </property>
+    <property name="gridStyle">
+     <enum>Qt::NoPen</enum>
+    </property>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>20</number>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>20</number>
+    </attribute>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
