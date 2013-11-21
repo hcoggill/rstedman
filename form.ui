@@ -25,36 +25,55 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <italic>true</italic>
-      <bold>true</bold>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
     </property>
     <property name="showDropIndicator" stdset="0">
      <bool>true</bool>
     </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::SingleSelection</enum>
+    </property>
     <property name="gridStyle">
      <enum>Qt::NoPen</enum>
     </property>
     <attribute name="horizontalHeaderDefaultSectionSize">
-     <number>20</number>
+     <number>18</number>
     </attribute>
     <attribute name="horizontalHeaderHighlightSections">
      <bool>false</bool>
     </attribute>
     <attribute name="horizontalHeaderMinimumSectionSize">
-     <number>20</number>
+     <number>18</number>
     </attribute>
     <attribute name="verticalHeaderDefaultSectionSize">
-     <number>17</number>
+     <number>14</number>
     </attribute>
     <attribute name="verticalHeaderHighlightSections">
      <bool>false</bool>
     </attribute>
     <attribute name="verticalHeaderMinimumSectionSize">
-     <number>17</number>
+     <number>14</number>
     </attribute>
+   </widget>
+   <widget class="QCheckBox" name="allRows">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>0</y>
+      <width>80</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Show All</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
