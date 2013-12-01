@@ -33,11 +33,11 @@ class View < Qt::Widget
   def on_selection(x,y)
     # take the first selection index and set this to be highlighted
     i = x.indexes.first
-    if i.column < @model.num_bells
-      @model.set_highlighted(i.row, i.column)
-    else
-      @model.set_call(i.row, i.column)
-    end
+    #if i.column < @model.num_bells
+    #  @model.set_highlighted(i.row, i.column)
+    #else
+    @model.set_call(i.row)
+    #end
     @model.set_data(@table, self)
     
     #puts "x is: #{x}, y is #{y}"

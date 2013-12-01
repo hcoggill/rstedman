@@ -47,7 +47,7 @@ class Model
     @highlighted = @touch.rows[row][column]
   end
  
-  def set_call(row, column)
+  def set_call(row)
 
   end
  
@@ -61,7 +61,7 @@ class Model
     if new_model == false
       model = widget.model
     else
-      model = Qt::StandardItemModel.new(@touch.rows.length, @touch.all_bells)
+      model = Qt::StandardItemModel.new(@touch.rows.length, 1)
     end
     offset = @touch.start_offset
     stroke = (@touch.start_stroke + 1) % 2
@@ -69,18 +69,15 @@ class Model
     six = 1
     changes = 0
     @touch.rows.each_index do |row|
-      @touch.rows[row].each_index do |col|
-        item = Qt::StandardItem.new @touch.printable(row, col)
-        if @touch.rows[row][col] == @highlighted
-          item.setBackground Qt::Brush.new(Qt::red)
-        else
-          item.setBackground Qt::Brush.new(Qt::white)
-        end
-        model.setItem(row, col, item)
-      end
+        #item = Qt::StandardItem.new @touch.printable(row, col)
+        #if @touch.rows[row][col] == @highlighted
+        #  item.setBackground Qt::Brush.new(Qt::red)
+        #else
+        #  item.setBackground Qt::Brush.new(Qt::white)
+        #end
+      str = @touch.stringify(@touch.rows[row])
       if @touch.num_bells != @touch.all_bells
-        item = Qt::StandardItem.new @touch.bell_to_str(@touch.all_bells)
-        model.setItem(row, @touch.rows[row].size, item) 
+        str << @touch.bell_to_str(@touch.all_bells)
       end
 
       labelling = ' '
@@ -90,30 +87,23 @@ class Model
         labelling = '-' if calling == Stedman::BOB
         labelling = 's' if calling == Stedman::SINGLE
       end
-      item = Qt::StandardItem.new labelling
-      model.setItem(row, @touch.rows[row].size + 1, item)
+      str << ' ' << labelling
+      item = Qt::StandardItem.new str
+      model.setItem(row, 0, item)
 
       offset += 1
       changes += 1
       stroke = (stroke + 1) % 2
       if offset == 6
-        item = Qt::StandardItem.new '-'
         offset = 0
         six += 1
         six_type = (six_type + 1) % 2
       end
-      
-
       model.setVerticalHeaderItem(row, Qt::StandardItem.new("#{six}/#{changes} #{stroke == HAND ? 'H' : 'B'}"))
     end
 
     if new_model == true
       widget.setModel(model)
-    end
-    @colours = []
-    @touch.all_bells.times do |i|
-      @colours << Qt::Brush.new(Qt::white)
-      #widget.setItemDelegateForColumn(1, Del.new(self, parent))
     end
     
     if @show_all_rows == 0
