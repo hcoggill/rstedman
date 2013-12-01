@@ -49,14 +49,17 @@
     <attribute name="horizontalHeaderMinimumSectionSize">
      <number>18</number>
     </attribute>
-    <attribute name="verticalHeaderDefaultSectionSize">
-     <number>14</number>
-    </attribute>
-    <attribute name="verticalHeaderHighlightSections">
+    <attribute name="verticalHeaderCascadingSectionResizes">
      <bool>false</bool>
     </attribute>
+    <attribute name="verticalHeaderDefaultSectionSize">
+     <number>15</number>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
     <attribute name="verticalHeaderMinimumSectionSize">
-     <number>14</number>
+     <number>16</number>
     </attribute>
    </widget>
    <widget class="QCheckBox" name="allRows">

@@ -186,7 +186,7 @@ class Touch
   # Internal representations of arrays are 0-based
   # External representations will be 1-based (human)
   
-  attr_reader :row, :false_rows, :musicals, :start_stroke, :start_six, :start_offset
+  attr_reader :row, :false_rows, :musicals, :start_stroke, :start_six, :start_offset, :comp
 
   def initialize(n, start_six = QUICK, six_offset = 3)
     @row = Array(1..n)
@@ -202,7 +202,8 @@ class Touch
     @pn = []
     @pn[QUICK] = [[0], [2], [0], [2], [0], [n - 1], [n - 3], [n - 3, n - 2, n - 1]]
     @pn[SLOW] = [[2], [0], [2], [0], [2], [n - 1], [n - 3], [n - 3, n - 2, n - 1]]
-    @comp = [PLAIN] * 22
+    @comp = [BOB] * 22
+    #@comp = [PLAIN] * 22
     
     @truth = nil
     @false_rows = []
