@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Stedman Composer</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTableView" name="tableView">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>50</y>
+      <width>761</width>
+      <height>501</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="showDropIndicator" stdset="0">
+     <bool>true</bool>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::SingleSelection</enum>
+    </property>
+    <property name="gridStyle">
+     <enum>Qt::NoPen</enum>
+    </property>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>120</number>
+    </attribute>
+    <attribute name="horizontalHeaderHighlightSections">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>120</number>
+    </attribute>
+    <attribute name="horizontalHeaderStretchLastSection">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderCascadingSectionResizes">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderDefaultSectionSize">
+     <number>15</number>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="verticalHeaderMinimumSectionSize">
+     <number>16</number>
+    </attribute>
+   </widget>
+   <widget class="QCheckBox" name="allRows">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>0</y>
+      <width>80</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Show All</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="info">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>571</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonLeft">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>0</y>
+      <width>91</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remove</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonRight">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>0</y>
+      <width>91</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="action_Quit"/>
+   </widget>
+   <addaction name="menu_File"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_Quit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
