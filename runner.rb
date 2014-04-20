@@ -217,20 +217,4 @@ touch.courses.length.times do |c|
   puts "Course #{c + 1}:  #{touch.course_comp c}"
 end
 
-#puts '========'
-#touch.course_rows(1).each do |r|
-#  puts touch.stringify r
-#end
-
-
-#touch.rows.each do |row|
-#  if touch.false_rows.include? row
-#    puts "FALSE #{row}"
-#  else
-#    #puts "Row:  #{row}"
-#  end
-#end
-
-#touch.check_music
-#pp touch.musicals
 
