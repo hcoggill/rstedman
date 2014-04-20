@@ -18,12 +18,19 @@ class View < Qt::Widget
     ui_file.close
     @table = find_child(Qt::TableView, 'tableView')
     @model.set_data(@table, self, true)
+
+    @label = find_child(Qt::Label, 'info')
+    @label.text = @model.info
+
     @table.horizontalHeader.setResizeMode(Qt::HeaderView::Fixed)
     @table.verticalHeader.setResizeMode(Qt::HeaderView::Fixed)
     #table.setModel(@model)
     @table.selectionModel.connect SIGNAL('selectionChanged(const QItemSelection &, const QItemSelection &)'), self, :on_selection
     @allRows = find_child(Qt::CheckBox, 'allRows')
     @allRows.connect SIGNAL('stateChanged(int)'), self, :all_rows
+
+    find_child(Qt::PushButton, 'buttonLeft').connect(SIGNAL('clicked()'), self, :button_left)
+    find_child(Qt::PushButton, 'buttonRight').connect(SIGNAL('clicked()'), self, :button_right)
 
     @widget.show
     @app.exec
@@ -33,15 +40,24 @@ class View < Qt::Widget
   def on_selection(x,y)
     # take the first selection index and set this to be highlighted
     i = x.indexes.first
-    #if i.column < @model.num_bells
-    #  @model.set_highlighted(i.row, i.column)
-    #else
     @model.set_call(i.row)
-    #end
+    update_state
+  end
+
+  def button_left
+    @model.remove_course
+    update_state
+  end
+
+  def button_right
+    @model.add_course
+    update_state
+  end
+
+  def update_state
     @model.set_data(@table, self)
-    
-    #puts "x is: #{x}, y is #{y}"
-    #@model.on_selection()
+    puts "Got model #{@model}, info #{@model.info}"
+    @label.text = @model.info    
   end
 
   def all_rows(state)

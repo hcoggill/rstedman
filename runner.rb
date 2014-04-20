@@ -29,6 +29,11 @@ A
 (1)
 EO2
 
+compallton5100 = <<EOT1
+1.s2.3.4.6.8.9.10.11.12.13.14.15.17
+2.6.s15.19
+EOT1
+
 comppnm2 = <<EOF4
 s1.2.s6.15.16.19
 19
@@ -118,23 +123,104 @@ s1.5.6.7.8.9.s11.14.16.17.18.20 (20)
 1.2.6.9.10.s15.17.23 (24)
 EOF6
 
+wtouch1 = "2s.5.8s.11s.14.16.17.20 (20)\n1.3s.4.6s.12s.13.14.16s.18" # 231
+wtouch2 = "1.3.5s.6.8.10.11.13.14.16.18.19.20 (20)\n2.3.5.6.8.10s.13s.14.17.19.22.25 (27)" # 279
+wtouch3 = "1s.3s.4.7s.8.10.12s.13.15.16.20.23 (26)\n2.3.4.5.6.8.11.14.15.16.19.23s (24)" # 303
+
+grimmet1 = "1,5-6,s9,12,14-19 (20)\n5-6,8-9,s11,20-21 (22)" # 252
+
+
 include Stedman
 puts 'Prog'
+#touch = Touch.new(11)
 touch = Touch.new(11)
-puts "#{touch.num_bells} bells"
-m = MusicGen.new(11)
-pp m.named_changes
+##, SLOW, 0)
+#m = MusicGen.new(11)
+#pp m.named_changes
 
 #touch.set_comp comprja
 #touch.set_comp compallton2
-touch.set_comp compcoaker1
-#touch.set_comp comppnm2
+#touch.set_comp compcoaker1
+touch.set_comp comppnm2
+##touch.set_comp("(22)\n(1)")
+
+#touch.set_comp "1.4.5.6.7.s9.s16.18\n4.5.6.7.s10.13.14.s16.17.19.22"
+
+#touch.set_comp "1.5.6.s9.12.14.15.16.17.18.19 (20)\n1.5.6.s9.12.14.15.16.17.18.19 (20)"
+
+#touch.set_comp "s1.s4.6.7.9.10.17.s18\n1.4.5.7.8.9.10.11.13.14.s16 (20)"
+#touch.set_comp compallton5100
+#touch.set_comp compallton1
+#touch.set_comp wtouch2
 
 puts "Starting to ring"
 touch.go
 puts "Starting to prove"
+puts touch.false_rows
+#touch.is_true?
+#puts "Touch has #{touch.rows.size} rows and is #{touch.is_true?} #{touch.rounds? ? "" : "but does not end in rounds!"}"
+#puts "Comp has #{touch.comp.length} sixes"
+#puts "(total #{touch.courses.inject(:+)})"
+exit
 
-puts "Touch has #{touch.rows.size} rows" # and is #{touch.is_true?} #{touch.rounds? ? "" : "but does not end in rounds!"}"
+## DISPLAY THE TOUCH IN VARIOUS WAYS:::
+
+puts touch.comp_string
+puts touch.courses.length
+puts touch.false_rows
+
+offset = 4
+six = 0
+touch.rows.each do |r|
+  if offset == 0
+    puts '--------'
+    puts "Six #{six}"
+  end
+  puts touch.stringify r
+  offset += 1
+  if offset == 6
+    offset = 0
+    six += 1
+  end
+end
+
+exit
+touch.magic_rows.each do |r|
+  puts "(#{touch.stringify r})"
+end  
+
+puts "*" * 30
+touch.six_ends.each {|r| puts r}
+exit
+
+puts "*" * 30
+touch.six_ends.each {|i| puts i}
+
+
+exit
+
+puts
+puts "." * 30
+puts
+
+
+touch.courses.length.times do |ci|
+  touch.course_rows(ci).each do |r|
+    puts touch.stringify r
+  end
+end
+
+
+puts "Touch has #{touch.courses.length} courses:"
+puts
+touch.courses.length.times do |c|
+  puts "Course #{c + 1}:  #{touch.course_comp c}"
+end
+
+#puts '========'
+#touch.course_rows(1).each do |r|
+#  puts touch.stringify r
+#end
 
 
 #touch.rows.each do |row|
@@ -145,6 +231,6 @@ puts "Touch has #{touch.rows.size} rows" # and is #{touch.is_true?} #{touch.roun
 #  end
 #end
 
-touch.check_music
-pp touch.musicals
+#touch.check_music
+#pp touch.musicals
 
