@@ -3,10 +3,9 @@ rstedman
 
 Ruby implementation of a Stedman tool
 
-Some more info to follow
 
-Another section
+Note
 ===============
 
-Here it is
+This project is unfinished and unlikely to do anything useful at present
 
