@@ -216,7 +216,6 @@ end
 
 class Touch
   # Internal representations of arrays are 0-based
-  # External representations will be 1-based (human)
   
   attr_reader :row, :false_rows, :musicals, :start_stroke, :start_six, :start_offset, :comp, :courses, :magic_rows
 
@@ -335,6 +334,13 @@ class Touch
       ends << "(#{stringify @magic_rows.last})"
     end
     return ends
+  end
+
+  def call_string(six)
+    s = ''
+    s = '-' if comp[six] == BOB
+    s = 's' if comp[six] == SINGLE
+    s
   end
 
   def printable(row, col)

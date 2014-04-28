@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '../lib')
+
+require 'stedman'
+require 'Qt4'
+
+
+app = Qt::Application.new ARGV
+model = Model.new
+
+model.start
+view = View.new(File.join(File.dirname(__FILE__), '../ui/form.ui'), app, model, ARGV)
+
+

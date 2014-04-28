@@ -67,11 +67,3 @@ class View < Qt::Widget
     
 end
 
-
-app = Qt::Application.new ARGV
-
-model = Model.new
-model.start
-
-view = View.new('form.ui', app, model, ARGV)
-

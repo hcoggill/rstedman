@@ -1,21 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'stedman'
-require 'Qt4'
 
 include Stedman
-
-# The model is quite complicated for a few cases:
-#  Each column should display a course - easy enough
-#  Each row should either display each row of the touch, or
-#  each six-end of the touch, plus the calls for the six where relevant
-#
-# Subtleties include:
-#  If the touch starts in the middle of first six (as usually happens)
-#   then this will contain fewer than 6 rows -and is considered to be the
-#   zeroth six
-#  If the touch ends not at a six-end then this will also contain fewer
-#   than six rows
 
 class Model 
   attr_reader :num_bells, :show_all_rows
@@ -33,7 +20,6 @@ class Model
   end
 
   def set_call(row)
-
   end
  
   def all_rows(state)
@@ -51,6 +37,9 @@ class Model
   end
 
   def set_data(widget, parent = nil, new_model = true)
+    num_rows = @touch.courses.max * 6
+    num_cols = @touch.courses.length
+
     if new_model == false
       model = widget.model
     else
