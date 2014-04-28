@@ -1,11 +1,7 @@
-require 'pp'
-
-# want to be able to input some calls, like 1, 3, s4, 6-11, 18; and display the
-# length of the touch, the truth, the musical value, optionally the sixes, six+1s, or 
-# all changes
-# also want a git-style database of comps...? erm, not sure
 
 module Stedman
+
+  VERSION = '1.0.0'
 
   QUICK = 0
   SLOW = 1
@@ -457,5 +453,6 @@ class Touch
 end
 
 end
+
 
 

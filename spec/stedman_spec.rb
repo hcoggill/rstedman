@@ -1,5 +1,6 @@
 require 'rspec'
-require_relative 'stedman'
+
+require 'stedman'
 
 include Stedman
 

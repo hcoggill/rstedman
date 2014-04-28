@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require_relative 'stedman.rb'
+require 'stedman'
 require 'Qt4'
 
 include Stedman

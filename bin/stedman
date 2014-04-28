@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '../lib')
+
+require 'stedman'
+
+comppnm2 = <<EOF4
+s1.2.s6.15.16.19
+19
+6 s19
+6 19
+19
+19
+5.s14.19
+19
+19
+s6
+6, s19
+2.s6.s13.s15.s19
+19
+6
+6 19
+19
+6 19
+19
+19
+3.4.9.10.12.13.s15.16.17.s22.s24 (24) [AAAAAAAAAAAAAAAAAAA]
+s1.2.6.s15.19
+A
+EOF4
+
+include Stedman
+
+touch = Touch.new(11)
+touch.set_comp comppnm2
+
+puts "Starting to ring"
+touch.go
+puts "Starting to prove"
+puts touch.false_rows
+
+puts touch.comp_string
+puts touch.courses.length
+puts touch.false_rows
+
+offset = 4
+six = 0
+touch.rows.each do |r|
+  if offset == 0
+    puts '--------'
+    puts "Six #{six}"
+  end
+  puts touch.stringify r
+  offset += 1
+  if offset == 6
+    offset = 0
+    six += 1
+  end
+end
+
+exit
+
