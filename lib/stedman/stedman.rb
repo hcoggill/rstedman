@@ -11,66 +11,6 @@ module Stedman
   HAND = 1
   BACK = 2
 
-class MusicGen
-
-  def initialize(num_bells)
-    @n = num_bells
-  end
-
-  def named_changes
-    music = { Backrounds: [[backrounds, HAND + BACK]], Queens: [[queens, HAND + BACK]], Kings: [[kings, HAND + BACK]], Tittums: [[tittums, HAND + BACK]], Nearmiss: nearmisses, DoubleWhittingtons: [[doublewhittingtons, HAND + BACK]], Updown: [[updown, HAND + BACK]], HandstrokeHomes: [[homes, HAND]], BackstrokeHomes: [[homes, BACK]] }
-  end
-
-  def nearmisses
-    miss_list = []
-    rounds = Array(1..@n)
-    (@n - 1).times do |i|
-      miss_list << [swap_pair(rounds, i), HAND + BACK]
-    end
-    miss_list
-  end
-
-  def swap_pair(ary, offset)
-    swapped = Array.new(ary)
-    a = swapped[offset]
-    b = swapped[offset + 1]
-    swapped[offset] = b
-    swapped[offset + 1] = a
-    return swapped
-  end
-
-  def homes
-    Array[nil] * (@n / 2.0).ceil + Array(((@n / 2.0).ceil + 1)..@n)    
-  end
-
-  def updown
-    Array(1..(@n / 2.0).ceil).reverse + Array(((@n / 2.0).ceil + 1)..@n)
-  end
-
-  def backrounds
-    Array(1..@n).reverse
-  end
-
-  def queens
-    Array((1..@n).step(2)) + Array((2..@n).step(2))
-  end
-
-  def kings
-    Array((1..@n).step(2)).reverse + Array((2..@n).step(2))
-  end
-
-  def tittums
-    Array(1..(@n / 2.0).ceil).zip(Array(((@n / 2.0).ceil + 1)..@n)).flatten.compact
-  end
-
-  def doublewhittingtons
-    m = (@n / 2.0).ceil
-    Array((1..m).step(2)).reverse + Array((2..m).step(2)) + Array(((m + 1)..@n).step(2)).reverse + Array(((m + 2)..@n).step(2))
-  end
-
-end
-
-
 class CompParser
 
   attr_reader :comp, :courses
@@ -217,7 +157,7 @@ end
 class Touch
   # Internal representations of arrays are 0-based
   
-  attr_reader :row, :false_rows, :musicals, :start_stroke, :start_six, :start_offset, :comp, :courses, :magic_rows
+  attr_reader :row, :false_rows, :musicals, :start_stroke, :start_six, :start_offset, :comp, :courses, :magic_rows, :course_lengths, :course_offsets
 
   def initialize(n, start_six = QUICK, six_offset = 3)
     @rounds = Array(1..n)
@@ -259,6 +199,7 @@ class Touch
       @magic_rows << @history.pop      
     end
     @row = last_row
+    calculate_course_offsets
   end
 
   def is_true?
@@ -279,27 +220,91 @@ class Touch
   end
 
   # 0-based course index
-  def course_rows(course)
+  def calculate_course_offsets
     # iterate over the previous courses to get the start offset of the course we need
     # there is a problem with counting the number of sixes in, say, the plain course:
     # are there 22 or 23 sixes, given that the first and last are incomplete?!
     # there appears to be some concensus that the "first" six is actually not counted
+#    puts "Rows:"
+#    offset = 4
+#    six = 0
+#    length = 0
+#    @history.each do |r|
+#      if offset == 0
+#        puts "-------- #{length} rows"
+#        puts "Six #{six}"
+#      end
+#      puts stringify r
+#      offset += 1
+#      length += 1
+#      if offset == 6
+#         offset = 0
+#         six += 1
+#      end
+#    end
+
+
+    @course_offsets = []
+    @course_lengths = []
     offset = 0
-    course.times do |i|
-      offset += @courses[i] * 6
+    @courses.length.times do |i|
+      length = @courses[i] * 6
+      #puts "For course #{i}, length initially #{length}"
       if i == 0
-        offset -= @start_offset + 1
-        offset += 6
+        length -= @start_offset
+        length += 5
+        #puts "Adjusted to #{length} for dummy initial six"
       end
+      if i == @courses.length - 1
+        length -= @magic_rows.length
+        #puts "Adjusted to #{length} for last six"
+      end
+      @course_offsets << offset
+      @course_lengths << length
+      #puts "Course #{i} has length #{length}, offset #{offset}"
+      offset += length
     end
-    length = @courses[course] * 6
-    if course == 0
-      length -= @start_offset + 1
-      length += 6
-    end
-    #puts "Asked for course #{course}, offset #{offset}, length #{length}"
-    @history[offset, length]
+
   end
+
+
+  def course_rows(course)
+    #puts "Asked for course #{course}, offset #{@course_offsets[course]}, length #{@course_lengths[course]}"
+    @history[@course_offsets[course], @course_lengths[course]]
+  end
+
+  # want to be able to find the maximum course length in changes, including
+  # the 0th/non-existant initial course - tough...
+
+  # want to be able to translate between actual course row offsets
+  # and the required visual index
+
+  # want to be able to get a description for the row - course index, six num &c
+  # erm, do we want to have that in this class.....? it's a bit visual.
+  def visual_course_row(course, row)
+    if course == 0
+      stringify @history[row]
+    else
+      row -= (5 - @start_offset)
+      if row < 0 or row >= @course_lengths[course]
+        return ""
+      end
+      stringify @history[@course_offsets[course] + row]
+    end
+  end
+
+  def num_rows
+    n = @course_lengths.max
+    if n != @course_lengths.first
+      n += (5 - @start_offset)
+    end
+    n
+  end
+
+  def num_columns
+    @courses.length
+  end
+
 
   def course_comp(course)
     @comp[@courses[0, course].inject(:+) || 0, @courses[course]]
@@ -322,18 +327,32 @@ class Touch
     @courses.pop
   end
  
-  def six_ends
+  def six_ends(course = nil)
+    # if start_offset == 3, i = 1
+    # if start_offset == 4, i = 0
+    # if start_offset == 5, i = 5
+    # if start_offset == 0, i = 4
+    # if start_offset == 1, i = 3
+    # if start_offset == 2, i = 2
     ends = []
-    i = 4 - @start_offset
-    while i < @history.length do
-      puts "On row #{i}, which is #{@history[i]}"
-      ends << stringify(@history[i])
+    if course.nil?
+      rows = @history
+      course = 0
+    else
+      rows = course_rows(course)
+    end
+    i = 0
+    if course == 0
+      i = 4 - @start_offset
+      if i < 0
+        i += 6
+      end
+    end
+    while i < rows.length
+      ends << rows[i]
       i += 6
     end
-    if @magic_rows.size > 0
-      ends << "(#{stringify @magic_rows.last})"
-    end
-    return ends
+    ends
   end
 
   def call_string(six)
@@ -424,36 +443,6 @@ class Touch
     else
       r.to_s
     end
-  end
-
-  def check_music
-    m = MusicGen.new(@n)
-    
-    music = m.named_changes
-    stroke = @start_stroke
-    @history.each do |row|
-      parse_music_row(music, row, stroke)
-      stroke = (stroke % 2) + 1
-    end
-  end
-
-  def parse_music_row(music, row, stroke)
-    music.each do |name, requirements|
-      requirements.each do |mus|
-        next if mus.last != HAND + BACK and mus.last != stroke
-        if comp_music_row(mus.first, row)
-          @musicals[name] ||= 0 and @musicals[name] += 1
-        end
-      end
-    end
-  end
-
-  def comp_music_row(a, b)
-    return false unless a.length == b.length
-    a.length.times do |i|
-      return false if not a[i].nil? and not a[i] == b[i]
-    end
-    true
   end
 
 end

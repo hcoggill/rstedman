@@ -1,5 +1,8 @@
 require 'rspec'
 
+require 'simplecov'
+SimpleCov.start
+
 require 'stedman'
 
 include Stedman
@@ -176,6 +179,11 @@ describe Touch do
       expect(@touch.comp_string).to eq("1.4.5.6.7.s9.s16.18\n4.5.6.7.s10.13.14.s16.17.19.22")
     end
 
+    it 'should handle unknown characters in composition string' do
+      @touch.set_comp "1.4.5.6.7.e.s9.s16.18\n4.5.6.7.s10.13.14.s16.17.19.22"
+      expect(@touch.comp_string).to eq("1.4.5.6.7.s9.s16.18\n4.5.6.7.s10.13.14.s16.17.19.22")
+    end
+
   end
 
   context 'Changing touches' do
@@ -292,7 +300,28 @@ describe Touch do
       expect(first_course.last).to eq([5, 4, 6, 3, 2, 1, 7, 8, 9, 10, 11])
       expect(second_course.first).to eq([4, 5, 3,6, 1, 2, 8, 7, 9, 11, 10])
       expect(second_course.last).to eq([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
-      
+    end
+
+    it 'should select courses for non-standard starting posisions with plain course' do
+      2.times do |six_type|
+        6.times do |starting_offset|
+          t = Touch.new(11, six_type, starting_offset)
+          t.go
+          expect(t.courses).to eq([22])
+          first_course = t.course_rows 0
+          expect(first_course).to eq(t.rows)
+        end
+      end
+    end
+
+    it 'should select courses for non-standard starting posisions with touch' do
+      t = Touch.new(11, SLOW, 0)
+      t.set_comp "5.18 (21)\ns19\n6.19\ns19\n6\n6 [AAAAA]\n6.19\nA\n2.6.s10.s15.19\ns19\n6.19\ns19\n6\n6\n6.19\nA\n6.19\nA\ns1.2.6.s15.19\ns19\n6.19\ns19\n6.s19\ns19\n6.s19\ns19\n (1)"
+      t.go
+      expect(t.courses).to eq([21, [22] * 37, 1].flatten)
+      first_course = t.course_rows 0
+      expect(first_course).to eq(t.rows[0, 131])
+      expect(t.course_rows(38).last).to eq([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     end
 
     it 'should contain the correct calls for a plain course' do
@@ -313,6 +342,43 @@ describe Touch do
       expect(@touch.course_comp(7)).to eq([0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0])
       expect(@touch.course_comp(8)).to eq([0, 0, 1, 1, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0])
       expect(@touch.course_comp(9)).to eq([0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0])
+    end
+
+    it 'should select the correct six ends for a plain course' do
+      six_ends = @touch.six_ends()
+      expect(six_ends.length).to eq(22)
+    end
+
+    it 'should select the correct six ends for any start and type' do
+      2.times do |six_type|
+        6.times do |offset|
+          t = Touch.new(11, six_type, offset)
+          t.go
+          expect(t.is_true?).to eq(true)
+          expect(t.six_ends().length).to eq(22)
+          expect(t.six_ends(0)).to eq(t.six_ends())
+
+          ends = []
+          previous = nil
+          idx = 0
+          t.rows.each_with_index do |row, i|
+            unless previous.nil?
+              if row.last == previous.last
+                idx = i - 1
+                break
+              end
+            end
+            previous = row
+          end
+          t.rows.each_with_index do |row, i|
+            if i % 6 == idx
+              ends << row
+            end
+          end
+          expect(t.six_ends(0)).to eq(ends)
+        end
+      end
+
     end
 
   end
@@ -410,7 +476,97 @@ describe Touch do
     end
 
   end
- 
+
+  context 'Starting at different offsets within a six' do
+    
+    it 'should by default start at 4th row of a quick six' do
+      t = Touch.new(11)
+      expect(t.start_offset).to eq(4 - 1)
+      expect(t.start_six).to eq(QUICK)
+    end
+
+    it 'can start at nth row of either six type' do
+      6.times do |i|
+        2.times do |s|
+          t = Touch.new(11, s, i)
+          t.go
+          expect(t.start_offset).to eq(i)
+          expect(t.start_six).to eq(s)
+          expect(t.is_true?()).to eq(true)
+          expect(t.num_bells).to eq(11)
+          expect(t.stringify(t.rows.last)).to eq('1234567890E')
+          expect(t.rounds?()).to eq(true)
+          expect(t.rows.length).to eq(6 * 11 * 2)
+          expect(t.courses.length).to eq(1)
+          expect(t.courses.first).to eq(22)
+          expect(t.comp_string).to eq(" (22)")
+        end
+      end
+    end
+
+  end
+
+
+  context 'Visual layout' do
+
+    it 'has 1 column and 132 rows for a plain course' do
+      t = Touch.new(11)
+      t.go
+      expect(t.num_columns).to eq(1)
+      expect(t.num_rows).to eq(132)
+    end
+
+    it 'has 2 columns and 132 rows for a short touch' do
+      t = Touch.new(11)
+      t.set_comp "1,5-6,s9,12,14-19 (20)\n5-6,8-9,s11,20-21 (22)" # 252
+      # first course: 20 * 6 + 2 = 122
+      # second course: 22 * 6 - 2 = 130
+      t.go
+      expect(t.num_columns).to eq(2)
+      expect(t.num_rows).to eq(132)
+      i = 0
+      122.times do |j|
+        expect(t.visual_course_row(0, j)).to eq(t.stringify t.rows[i])
+        i += 1
+      end
+      expect(t.visual_course_row(1, 0)).to eq("")
+      expect(t.visual_course_row(1, 1)).to eq("")
+      130.times do |j|
+        expect(t.visual_course_row(1, j + 2)).to eq(t.stringify t.rows[i])
+        i += 1
+      end
+
+    end
+
+  end
+
+
+  context 'Bits and pieces' do
+
+    it 'has 11 or 12 bells' do
+      t = Touch.new(11)
+      expect(t.all_bells).to eq(12)
+      t = Touch.new(12)
+      expect(t.all_bells).to eq(12)
+    end
+
+    it 'can print rows' do
+      t = Touch.new(11)
+      t.go
+      expect(t.bell_to_str 12).to eq('T')
+      expect(t.printable(t.rows.length - 1, 10)).to eq('E')
+    end
+
+    it 'can print call strings' do
+      t = Touch.new(11)
+      t.set_comp  "1.s4.5.7.9.10.12.s14.15.18 (18)\n1.2.s5.7.8.10 (10)\n1.s2.s6.s8.10.s12.s14.15.18.s20.s22" # 300 ljw
+      expect(t.call_string 0).to eq('-')
+      expect(t.call_string 1).to eq('')
+      expect(t.call_string 3).to eq('s')
+    end
+
+  end
+
 end
 
 
